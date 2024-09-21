@@ -42,7 +42,7 @@
     "react-scripts": "^4.0.3",
     "solana-wallet": "^1.0.1",
     "styled-components": "^5.2.0",
-    "tronweb": "^4.4.0",
+    "tronweb": "^6.0.0",
     "web-vitals": "^0.2.4"
   },
   "devDependencies": {
