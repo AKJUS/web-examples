@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "3.2.4",
-    "@sveltejs/kit": "2.5.25",
+    "@sveltejs/kit": "2.8.3",
     "@sveltejs/vite-plugin-svelte": "3.1.2",
     "@typescript-eslint/eslint-plugin": "8.3.0",
     "@typescript-eslint/parser": "8.3.0",
@@ -22,15 +22,15 @@
     "prettier": "3.3.3",
     "prettier-plugin-svelte": "3.2.6",
     "svelte": "4.2.19",
-    "svelte-check": "3.8.6",
+    "svelte-check": "4.0.0",
     "tslib": "2.7.0",
     "typescript": "5.5.4",
-    "vite": "5.4.6"
+    "vite": "5.4.12"
   },
   "type": "module",
   "dependencies": {
     "@tanstack/react-query": "^5.53.1",
-    "@wagmi/connectors": "5.1.8",
+    "@wagmi/connectors": "5.7.7",
     "@wagmi/core": "2.13.4",
     "@web3modal/wagmi": "5.1.4",
     "svelte-french-toast": "1.2.0",
