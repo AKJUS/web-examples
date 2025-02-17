@@ -1,7 +1,20 @@
 import cors from 'cors';
 import express from 'express';
 import Session from 'express-session';
-import { generateNonce,  SiweMessage } from 'siwe';
+import { generateNonce } from 'siwe';
+import {
+  /* verifySignature, */
+  getAddressFromMessage,
+  getChainIdFromMessage,
+} from '@reown/appkit-siwe'
+import { createPublicClient, http } from 'viem'
+
+
+// get env variables
+import dotenv from 'dotenv';
+dotenv.config();
+// get Project ID
+const projectId = process.env.PROJECT_ID;
 
 const app = express();
 
@@ -32,15 +45,51 @@ app.post('/verify', async (req, res) => {
       if (!req.body.message) {
         return res.status(400).json({ error: 'SiweMessage is undefined' });
       }
-      let SIWEObject = new SiweMessage(req.body.message);
-      const { data: message } = await SIWEObject.verify({ signature: req.body.signature, nonce: req.session.nonce });
+      const message = req.body.message;
+
+      const address = getAddressFromMessage(message);
+      let chainId = getChainIdFromMessage(message);
       
-      const address = message.address;
-      const chainId = message.chainId;
+
+// for the moment, the verifySignature is not working with social logins and emails  with non deployed smart accounts    
+/*       const isValid = await verifySignature({
+        address,
+        message,
+        signature: req.body.signature,
+        chainId,
+        projectId,
+      }); */
+ // we are going to use https://viem.sh/docs/actions/public/verifyMessage.html   
+      const publicClient = createPublicClient(
+        {
+          transport: http(
+            `https://rpc.walletconnect.org/v1/?chainId=${chainId}&projectId=${projectId}`
+          )
+        }
+      );
+      const isValid = await publicClient.verifyMessage({
+        message,
+        address,
+        signature: req.body.signature
+      });
+// end o view verifyMessage      
+
+      if (!isValid) {
+        // throw an error if the signature is invalid
+        throw new Error('Invalid signature');
+      }
+      if (chainId.includes(":")) {
+        chainId = chainId.split(":")[1];
+      }
+      // Convert chainId to a number
+      chainId = Number(chainId);
+
+      if (isNaN(chainId)) {
+          throw new Error("Invalid chainId");
+      }
       
       // save the session with the address and chainId (SIWESession)
       req.session.siwe = { address, chainId };
-      console.log("/verify");
       req.session.save(() => res.status(200).send(true));
     } catch (e) {
       // clean the session
@@ -53,7 +102,8 @@ app.post('/verify', async (req, res) => {
   // get the session
   app.get('/session', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
-    console.log("/session");
+    console.log("/session", req.session.siwe);
+
     res.send(req.session.siwe);
   });
 

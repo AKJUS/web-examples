@@ -15,6 +15,9 @@ export async function createWalletKit(relayerRegionURL: string) {
       description: 'React Wallet for WalletConnect',
       url: 'https://walletconnect.com/',
       icons: ['https://avatars.githubusercontent.com/u/37784886']
+    },
+    signConfig: {
+      disableRequestQueue: true
     }
   })
 

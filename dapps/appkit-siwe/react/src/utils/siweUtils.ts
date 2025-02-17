@@ -6,9 +6,25 @@ import {
     createSIWEConfig,
     formatMessage,
   } from '@reown/appkit-siwe'
+import { getAddress } from 'viem';
   
 
 const BASE_URL = 'http://localhost:8080';
+
+// Normalize the address (checksum)
+const normalizeAddress = (address: string): string => {
+  try {
+    const splitAddress = address.split(':');
+    const extractedAddress = splitAddress[splitAddress.length - 1];
+    const checksumAddress = getAddress(extractedAddress);
+    splitAddress[splitAddress.length - 1] = checksumAddress;
+    const normalizedAddress = splitAddress.join(':');
+
+    return normalizedAddress;
+  } catch (error) {
+    return address;
+  }
+}
 
 // call the server to get a nonce
  const getNonce = async () : Promise<string> => {
@@ -63,7 +79,10 @@ const BASE_URL = 'http://localhost:8080';
   }
   
   const data = await res.json();
-  return data == "{}" ?  null : data as SIWESession;
+  
+  const isValidData = typeof data === 'object' && typeof data.address === 'string' && typeof data.chainId === 'number';
+
+  return isValidData ? data as SIWESession : null;
 }
 
 // call the server to sign out
@@ -88,10 +107,11 @@ export const createSIWE = (chains: [AppKitNetwork, ...AppKitNetwork[]]) => {
               domain: window.location.host,
               uri: window.location.origin, 
               chains: chains.map((chain: AppKitNetwork) => parseInt(chain.id.toString())),
-              statement: 'Please sign with your account',
+              statement: 'Welcome to the dApp! Please sign this message',
             }),
         createMessage: ({ address, ...args }: SIWECreateMessageArgs) => {
-          return formatMessage(args, address)
+          // normalize the address in case you are not using our library in the backend
+          return formatMessage(args, normalizeAddress(address))
         },
         getNonce,
         getSession,
