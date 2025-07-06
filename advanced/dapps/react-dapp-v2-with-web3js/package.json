@@ -52,10 +52,10 @@
     "web3": "^1.7.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.19.4",
+    "@babel/preset-env": "^7.27.1",
     "@testing-library/jest-dom": "^5.16.1",
-    "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.5.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.0.0",
     "@types/bn.js": "^5.1.0",
     "@types/eth-sig-util": "^2.1.1",
     "@types/jest": "^27.4.0",
